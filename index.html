@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<div id="html2">
+<head>
+<title>Page Title</title>
+</head>
+<body>
+<div id="menu"><br>
+  <h1 style="font-size: 55px;">Escaped K<p1 onclick="codeCheck()">i</p1>tty</h1><br><br>
+  <p class="mbutton" onclick="startGame()">Start</p><br>
+  <p class="mbutton" onclick="tutorial()">Tutorial</p>
+</div>
+<div id="game"><br>
+  <div class="alert" id="alert">
+    <p id="msg"></p><br>
+  </div><br>
+  <div id="rgame">
+    <p class="mbutton" onclick="draw()">Draw</p><br>
+    <div id="cards">
+    </div>
+  </div>
+</div>
+</body>
+<script>
+var cardsinhand = [];
+var cardsindiscard = [];
+var cardsinpile = [];
+function Card(id,title,desc,action,actiont,img) {
+  this.show = function() {
+    var ccard = document.createElement("span");
+    ccard.id = id;
+    ccard.classList.add("card");
+    document.getElementById("cards").appendChild(ccard);
+    var ctitle = document.createElement("p");
+    ctitle.innerHTML = title;
+    document.getElementById(id).appendChild(ctitle);
+    var cdesc = document.createElement("i");
+    cdesc.innerHTML = desc;
+    document.getElementById(id).appendChild(cdesc);
+    if (img) {
+      var cimg = document.createElement("img");
+      cimg.src = img;
+      document.getElementById(id).appendChild(cimg);
+    }
+    if (actiont) {
+      var cbtn = document.createElement("button");
+      cbtn.innerHTML = "Use";
+      cbtn.onclick = action;
+      document.getElementById(id).appendChild(cbtn);
+    }
+  }
+}
+function Action(action,id) {
+  if (action == 0) {
+    var cc = cardsinhand.indexOf(id.toString());
+    console.log(id);
+    cardsinhand.splice(cc,1);
+    cardsinpile.push(id.toString());
+    draw();
+    draw();
+    updateHand();
+  }
+  else if (action == 1) {
+      if (cardsinhand.includes("3") || cardsinhand.includes("4")) {
+        var n = Math.floor(Math.random()*3+1);
+        var aud = new Audio("sounds2/cat"+n+".mp3");
+        aud.play();
+        cardAlert("Your cat runs away from you","show");
+        var cc = cardsinhand.indexOf(id.toString());
+        console.log(id);
+        cardsinhand.splice(cc,1);
+        cardsinpile.push(id.toString());
+        for (var i in cardsinhand) {
+          if (cardsinhand[i] == "3" || cardsinhand[i] == "4") {
+            var cn = cardsinhand[i];
+            cardsinhand.splice(i,1);
+            cardsindiscard.push(cn);
+            break;
+          }
+        }
+        updateHand();
+      } else {
+        alert("You won!");
+        document.getElementById("menu").style.display = "block";
+        document.getElementById("game").style.display = "none";
+      }
+  }
+  else if (action == 2) {
+    var n = Math.floor(Math.random()*4+1);
+    var aud = new Audio("sounds2/disgust"+n+".mp3");
+    aud.play();
+    cardAlert("You chuck the dead mouse into your backyard","show");
+    var cc = cardsinhand.indexOf(id.toString());
+    console.log(id);
+    cardsinhand.splice(cc,1);
+    cardsinpile.push(id.toString());
+  }
+  else if (action == 3) {
+    var n = Math.floor(Math.random()*3+1);
+    var aud = new Audio("sounds2/dog"+n+".mp3");
+    aud.play();
+    cardAlert("You put the dog back outside","show");
+    var cc = cardsinhand.indexOf(id.toString());
+    console.log(id);
+    cardsinhand.splice(cc,1);
+    cardsinpile.push(id.toString());
+  }
+  else if (action == 4) {
+    cardAlert("Trick Card Wait 15 Seconds!","show");
+    document.getElementById("rgame").style.display = "none";
+    startTimer(15,document.getElementById("timer"));
+    var cc = cardsinhand.indexOf(id.toString());
+    console.log(id);
+    cardsinhand.splice(cc,1);
+    cardsinpile.push(id.toString());
+  }
+  updateHand();
+}
+function updateHand() {
+    document.getElementById("cards").innerHTML = "";
+    for (var i in cardsinhand) {
+      var v = parseInt(cardsinhand[i]);
+      cards[v].show();
+    }
+}
+function draw() {
+  if (cardsinhand.length <= 5) {
+  if (cardsinpile.length > 0) {
+    var n = Math.floor(Math.random()*7+1);
+    var aud = new Audio("sounds2/card"+n+".mp3");
+    aud.play();
+    var cardn = cardsinpile[Math.floor(Math.random()*cardsinpile.length)];
+    var cc = cardsinpile.indexOf(cardn);
+    cardsinpile.splice(cc,1);
+    cardsinhand.push(cardn.toString());
+    updateHand();
+  } else {
+    console.log("Adding Cards To Pile...");
+    for (var i in cardsindiscard) {
+      var cc = cardsindiscard.indexOf(i);
+      var cn = cardsindiscard[i];
+      cardsindiscard.splice(cc,1);
+      cardsinpile.push(cn);
+      console.log(cc+"--"+cn);
+    }
+  }
+  } else {
+    cardAlert("You have too many cards in your deck!","show");
+  }
+}
+function codeCheck() {
+  var code = prompt("What is your code?");
+  if (code == "OPOAGO") {
+    cards[13] = new Card("13","Cat","i hOPe yOu hAve a GOod day!",function(){Action(1,13);},true);
+  }
+}
+function cardAlert(msg,action) {
+  if (action == "show") {
+    document.getElementById("alert").style.background = "red";
+    document.getElementById("msg").innerHTML = msg;
+    setTimeout(function(){cardAlert("text","hide");},5000);
+  }
+  else if (action == "hide") {
+    document.getElementById("alert").style.background = "#45e662";
+    document.getElementById("msg").innerHTML = "";
+  }
+}
+function startTimer(duration, display) {
+    var timer = duration, minutes, seconds;
+    var timer22 = setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+        if (--timer < 0) {
+            document.getElementById("rgame").style.display = "block";
+            display.textContent = "";
+            clearInterval(timer22);
+        }
+    }, 1000);
+}
+
+function startGame() {
+  cardsinhand = [];
+  cardsindiscard = [];
+  cardsinpile = [];
+  for (var i in cards) {
+    cardsinpile.push(i.toString());
+    console.log(cardsinpile);
+  }
+  updateHand();
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("game").style.display = "block";
+}
+function tutorial() {
+  var cccc = confirm("Are you sure you want to begin the tutorial?");
+  if (cccc) {
+    alert("The goal of this game is to find your escaped cat");
+    alert("There are different types of cards");
+    alert("There are: Dog,Dead Mouse,Cat Deterrent, and Draw 2x");
+    alert("The Dog and Dead Mouse dont do anything useful");
+    alert("They fill up room and stop you from cathcing the cat");
+    alert("The next card is Cat Deterrent");
+    alert("If you have a Cat Deterrent in your hand and you find your cat it will run away");
+    alert("Last card is Draw 2x");
+    alert("As you can guess it draws twice in one click");
+    alert("To draw a card you press the draw card button at the top");
+    alert("You can only have a max of 6 cards in your hand at a time");
+    alert("I think thats all, i hOPe yOu hAve a GOod day!")
+  }
+}
+//code is OPOAGO
+var cards = [];
+cards[0] = new Card("0","Draw 2x","Draw 2 Cards",function(){Action(0,0);},true,"images/2x.png");
+cards[1] = new Card("1","Draw 2x","Draw 2 Cards",function(){Action(0,1);},true,"images/2x.png");
+cards[2] = new Card("2","Cat","*Meow* You Found Me",function(){Action(1,2);},true,"images/cat.png");
+cards[3] = new Card("3","Cat Deterrent","*HISSSSSSSSS*",function(){},false,"images/deterrent.png");
+cards[4] = new Card("4","Cat Deterrent","What is that smell??",function(){},false,"images/deterrent.png");
+cards[5] = new Card("5","Dead Mouse","*Twitch Twitch*",function(){Action(2,5);},true,"images/mouse.png");
+cards[6] = new Card("6","Dead Mouse","HELP ME!!",function(){Action(2,6);},true,"images/mouse.png");
+cards[7] = new Card("7","Dead Mouse","EWW! Gross!",function(){Action(2,7);},true,"images/mouse.png");
+cards[8] = new Card("8","Dead Mouse","How can a cat do this much damage?",function(){Action(2,8);},true,"images/mouse.png");
+cards[9] = new Card("9","Dog","Where did you come from?",function(){Action(3,9);},true,"images/dog.png");
+cards[10] = new Card("10","Dog","How did you get inside?",function(){Action(3,10);},true,"images/dog.png");
+cards[11] = new Card("11","Dog","YAY! Puppy!",function(){Action(3,11);},true,"images/dog.png");
+cards[12] = new Card("12","Dog","So Cute!",function(){Action(3,12);},true,"images/dog.png");
+cards[13] = new Card("13","Draw 2x","Draw 2 Cards",function(){Action(4,13);},true,"images/2x.png");
+cards[14] = new Card("14","Draw 2x","Draw 2 Cards",function(){Action(4,14);},true,"images/2x.png");
+cards[15] = new Card("15","Draw 2x","Draw 2 Cards",function(){Action(4,15);},true,"images/2x.png");
+cards[16] = new Card("16","Draw 2x","Draw 2 Cards",function(){Action(4,16);},true,"images/2x.png");
+
+function show() {
+  document.getElementById("html2").style.display = "block";
+  document.getElementById("intro").style.display = "none";
+}
+//setInterval(show,5000);
+</script>
+<style>
+html {
+  background-color: #45e662;
+}
+#html2 {
+  /*display: none;*/
+}
+#cards {
+  display: inline-block;
+  padding: 20px;
+  width: 100%;
+}
+#cards:before {
+  content: " ";
+  display:inline-block;
+  width:32px;
+}
+.card {
+  width: 16%;
+  background-color: #cccccc;
+  text-align: center;
+  padding: 1px;
+  border: solid grey;
+  border-radius: 9px;
+  float: left;
+  min-height: 300px;
+}
+.card button {
+  background-color: #4ce6e3;
+  padding: 5px;
+  border-radius: 9px;
+}
+.card img {
+  max-width: 100%;
+}
+.card:before {
+  content: " ";
+  display:inline-block;
+  width:32px;
+}
+#game {
+  display: none;
+}
+#menu {
+  text-align: center;
+  margin: auto;
+}
+.mbutton {
+  background-color:#9ef7f1;
+  width: 20%;
+  text-align: center;
+  margin: auto;
+  border: solid grey;
+  border-radius: 9px;
+  padding: 10px;
+}
+
+.alert {
+  padding: 20px;
+  background-color: #45e662;
+  color: white;
+  text-align: center;
+  width: 90%;
+  margin: auto;
+  border-radius: 9px;
+}
+</style>
+</div>
+</html>
+<div id="intro">
+<h1 class="block-effect" style="--td: 1.2s">
+  <div class="block-reveal" style="--bc: #126e46; --d: .1s;">JJK Codez</div>
+  <!--<div class="block-reveal" style="--bc: #bf4060; --d: .5s">Presents</div>
+  <div class="block-reveal" style="--bc: green; --d: .9s">God Sim</div>-->
+</h1>
+</div>
+<div style="text-align: center;font-size:55px;" id="timer">
+</div>
+<style>
+ /* reset */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#intro {
+  display: none;/*put 'flex' not 'block' pls future jj*/
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+
+  min-height: 100vh;
+  padding: 20px;
+
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+
+/* other */
+.info {
+  margin: 20px 0;
+  text-align: center;
+}
+
+p {
+  color: #2e2e2e;
+  margin-bottom: 20px;
+}
+
+
+/* block-$ */
+.block-effect {
+  font-size: calc(8px + 6vw);
+}
+
+.block-reveal {
+  --t: calc(var(--td) + var(--d));
+
+  color: transparent;
+  padding: 4px;
+
+  position: relative;
+  overflow: hidden;
+
+  animation: revealBlock 0s var(--t) forwards;
+}
+
+.block-reveal::after {
+  content: '';
+  width: 0%;
+  height: 100%;
+  padding-bottom: 4px;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  background: var(--bc);
+  animation: revealingIn var(--td) var(--d) forwards, revealingOut var(--td) var(--t) forwards;
+}
+
+
+/* animations */
+@keyframes revealBlock {
+  100% {
+    color: #84a3e0;
+  }
+}
+
+@keyframes revealingIn {
+
+  0% {
+    width: 0;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes revealingOut {
+
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+
+}
+
+.abs-site-link {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  color: hsla(0, 0%, 0%, .6);
+  font-size: 16px;
+}
+</style>

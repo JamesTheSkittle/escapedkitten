@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<widget xmlns   = "http://www.w3.org/ns/widgets"
+    xmlns:gap   = "http://phonegap.com/ns/1.0"
+    id          = "io.github.jamestheskittle.escapedkitten"
+    versionCode = "10"
+    version     = "1.0.0" >
+
+<!-- versionCode is optional and Android only -->
+
+  <name>Escaped Kitty</name>
+
+  <description>
+      A game where your cat escapes and you have to find him.
+  </description>
+
+  <author href="https://jamestheskittle.github.io" email="jamestheskittle@gmail.com">
+      James Kittle
+  </author>
+  <icon src="images/cat.png" />
+</widget>
