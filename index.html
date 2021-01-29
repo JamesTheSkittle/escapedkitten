@@ -8,7 +8,7 @@
 <div id="menu"><br>
   <h1 style="font-size: 55px;">Escaped K<p1 onclick="codeCheck()">i</p1>tty</h1><br><br>
   <p class="mbutton" onclick="startGame()">Start</p><br>
-  <p class="mbutton" onclick="tutorial()">Tutorial</p>
+  <p class="mbutton" onclick="tutorial()">Instructions</p>
 </div>
 <div id="game"><br>
   <div class="alert" id="alert">
@@ -19,6 +19,86 @@
     <div id="cards">
     </div>
   </div>
+</div><br>
+<div id="tutorial"><br>
+  <h1>Instructions</h1>
+  <button onclick="document.getElementById('menu').style.display = 'block';
+  document.getElementById('tutorial').style.display = 'none';" class="mbutton">Back</button>
+  <h2>Goal</h2>
+  <p>This is a card game where your goal is to find your cat! But its not that easy, There are many obstacles blocking you.</p>
+  <h2>Cards</h2>
+    <h3>Dog</h3>
+    <div id="cards" style="width:16%;">
+      <span id="12" class="card" style="width: 100%;">
+        <p>Dog</p>
+        <i>So Cute!</i>
+        <img src="images/dog.png">
+        <div id="cbb-12" class="button">
+          <button>Use</button>
+        </div>
+      </span>
+    </div>
+    <p>The dog is meant to take up space in your hand. You can press 'Use' to put it outside.</p>
+    <h3>Dead Mouse</h3>
+    <div id="cards" style="width:16%;">
+      <span id="8" class="card" style="width: 100%;">
+      <p>Dead Mouse</p>
+      <i>How can a cat do this much damage?</i>
+      <img src="images/mouse.png">
+        <div id="cbb-8" class="button">
+          <button>Use</button>
+        </div>
+      </span>
+    </div>
+    <p>The dead mouse is meant to take up space in your hand. You can press 'Use' to put it in your backyard.</p>
+    <h3>Fur Ball</h3>
+    <div id="cards" style="width:16%;">
+      <span id="8" class="card" style="width: 100%;">
+      <p>Fur Ball</p>
+      <i>Gross</i>
+      <img src="images/furball.png">
+        <div id="cbb-8" class="button">
+          <button>Use</button>
+        </div>
+      </span>
+    </div>
+    <p>The fur ball is meant to take up space in your hand. You can press 'Use' to put it in the trash.</p>
+    <h3>Draw 2x</h3>
+    <div id="cards" style="width:16%;">
+      <span id="8" class="card" style="width: 100%;">
+      <p>Draw 2x</p>
+      <i>Draw 2 Cards</i>
+      <img src="images/2x.png">
+        <div id="cbb-8" class="button">
+          <button>Use</button>
+        </div>
+      </span>
+    </div>
+    <p>The Draw 2x draws 2 cards at once, but be careful there are fake Draw 2x cards which will make you wait 10 seconds. You can press 'Use' to use it</p>
+    <h3>Cat Deterrent</h3>
+    <div id="cards" style="width:16%;">
+      <span id="8" class="card" style="width: 100%;">
+      <p>Cat Deterrent</p>
+      <i>Whats that smell?</i>
+      <img src="images/deterrent.png">
+        <div id="cbb-8" class="button">
+          <button>Use</button>
+        </div>
+      </span>
+    </div>
+    <p>If you have a Cat Deterrent in your hand and you find your cat it will run away. You can press 'Use' to use it</p>
+    <h3>Cat</h3>
+    <div id="cards" style="width:16%;">
+      <span id="8" class="card" style="width: 100%;">
+      <p>Cat</p>
+      <i>*Meow*</i>
+      <img src="images/cat.png">
+        <div id="cbb-8" class="button">
+          <button>Use</button>
+        </div>
+      </span>
+    </div>
+    <p>He is the goal. You need to catch him NOW. You can press 'Use' to catch him.</p>
 </div>
 </body>
 <script>
@@ -43,10 +123,14 @@ function Card(id,title,desc,action,actiont,img) {
       document.getElementById(id).appendChild(cimg);
     }
     if (actiont) {
+      var cbtn2 = document.createElement("div");
+      cbtn2.id = "cbb-"+id;
+      cbtn2.classList.add("button");
+      document.getElementById(id).appendChild(cbtn2);
       var cbtn = document.createElement("button");
       cbtn.innerHTML = "Use";
       cbtn.onclick = action;
-      document.getElementById(id).appendChild(cbtn);
+      document.getElementById("cbb-"+id).appendChild(cbtn);
     }
   }
 }
@@ -106,9 +190,19 @@ function Action(action,id) {
     cardsinpile.push(id.toString());
   }
   else if (action == 4) {
-    cardAlert("Trick Card Wait 15 Seconds!","show");
+    cardAlert("Trick Card Wait 10 Seconds!","show");
     document.getElementById("rgame").style.display = "none";
-    startTimer(15,document.getElementById("timer"));
+    startTimer(10,document.getElementById("timer"));
+    var cc = cardsinhand.indexOf(id.toString());
+    console.log(id);
+    cardsinhand.splice(cc,1);
+    cardsinpile.push(id.toString());
+  }
+  else if (action == 5) {
+    var n = Math.floor(Math.random()*4+1);
+    var aud = new Audio("sounds2/disgust"+n+".mp3");
+    aud.play();
+    cardAlert("You put the furball in the trash can","show");
     var cc = cardsinhand.indexOf(id.toString());
     console.log(id);
     cardsinhand.splice(cc,1);
@@ -197,21 +291,8 @@ function startGame() {
   document.getElementById("game").style.display = "block";
 }
 function tutorial() {
-  var cccc = confirm("Are you sure you want to begin the tutorial?");
-  if (cccc) {
-    alert("The goal of this game is to find your escaped cat");
-    alert("There are different types of cards");
-    alert("There are: Dog,Dead Mouse,Cat Deterrent, and Draw 2x");
-    alert("The Dog and Dead Mouse dont do anything useful");
-    alert("They fill up room and stop you from cathcing the cat");
-    alert("The next card is Cat Deterrent");
-    alert("If you have a Cat Deterrent in your hand and you find your cat it will run away");
-    alert("Last card is Draw 2x");
-    alert("As you can guess it draws twice in one click");
-    alert("To draw a card you press the draw card button at the top");
-    alert("You can only have a max of 6 cards in your hand at a time");
-    alert("I think thats all, i hOPe yOu hAve a GOod day!")
-  }
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("tutorial").style.display = "block";
 }
 //code is OPOAGO
 var cards = [];
@@ -231,8 +312,12 @@ cards[12] = new Card("12","Dog","So Cute!",function(){Action(3,12);},true,"image
 cards[13] = new Card("13","Draw 2x","Draw 2 Cards",function(){Action(4,13);},true,"images/2x.png");
 cards[14] = new Card("14","Draw 2x","Draw 2 Cards",function(){Action(4,14);},true,"images/2x.png");
 cards[15] = new Card("15","Draw 2x","Draw 2 Cards",function(){Action(4,15);},true,"images/2x.png");
-cards[16] = new Card("16","Draw 2x","Draw 2 Cards",function(){Action(4,16);},true,"images/2x.png");
-
+cards[16] = new Card("17","Draw 2x","Draw 2 Cards",function(){Action(4,16);},true,"images/2x.png");
+cards[17] = new Card("18","Fur Ball","Ewwwwwww",function(){Action(5,17);},true,"images/furball.png");
+cards[18] = new Card("19","Fur Ball","OH NO! I stepped in it!",function(){Action(5,18);},true,"images/furball.png");
+cards[19] = new Card("20","Fur Ball","Where did this come from?",function(){Action(5,19);},true,"images/furball.png");
+cards[20] = new Card("21","Fur Ball","Gross",function(){Action(5,20);},true,"images/furball.png");
+cards[21] = new Card("22","Fur Ball","EWWW! It is slimy!",function(){Action(5,21);},true,"images/furball.png");
 function show() {
   document.getElementById("html2").style.display = "block";
   document.getElementById("intro").style.display = "none";
@@ -265,11 +350,18 @@ html {
   border-radius: 9px;
   float: left;
   min-height: 300px;
+  display: table;
 }
 .card button {
   background-color: #4ce6e3;
   padding: 5px;
+  width: 50px;
   border-radius: 9px;
+}
+.card .button {
+  display: table-cell;
+  vertical-align: bottom;
+  text-align: center;
 }
 .card img {
   max-width: 100%;
@@ -285,6 +377,11 @@ html {
 #menu {
   text-align: center;
   margin: auto;
+}
+#tutorial {
+  text-align: center;
+  margin: auto;
+  display: none;
 }
 .mbutton {
   background-color:#9ef7f1;
